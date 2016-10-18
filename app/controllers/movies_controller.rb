@@ -13,16 +13,22 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.all_ratings
     if params[:ratings]
-	@selected_rating = params[:ratings].keys 
+	@selected_rating = params[:ratings].keys
+ 	session[:ratings] = @selected_rating
+    elsif session[:ratings]
+	@selected_rating = session[:ratings]
     else
-	@selected_rating = @all_ratings
+	 @selected_rating = @all_ratings
     end
-    if params[:sort] == "title"
+    sort = params[:sort] || session[:sort]
+    if sort == "title"
 	@title_class = "hilite"
   	@movies = Movie.filter(@selected_rating).order("title")
-    elsif params[:sort] == "release"
+    	session[:sort] = "title"
+    elsif sort == "release"
 	@release_class = "hilite"
-   	@movies = Movie.filter(@selected_rating).order("release_date")
+	@movies = Movie.filter(@selected_rating).order("release_date")
+	session[:sort] = "release"
     else
 	@movies = Movie.filter(@selected_rating)
     end
